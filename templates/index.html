@@ -35,7 +35,7 @@
             </div>
             <div class="filter-item">                                                       
                 <select id="rating" title="Filter by rating">                               
-                    <option id="user-rating">User Rating</option>
+                    <option value="">User Rating</option>
                     <option value="4+">⭐⭐⭐⭐ and above</option>
                     <option value="3+">⭐⭐⭐ and above</option>
                 </select>
@@ -53,28 +53,25 @@
         </div>
     </section>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Tour Package Grid-->
-        <div class="container">                                 
-            <section class="package" id="packages">                          
-                {% for package in packages %}
-                <div class="package-card">                      
-                    <a href="{% url 'package_detail' package.id %}">
-                        <img src="{{ package.image.url }}" alt="{{ package.title }}">    
-                        <h3>{{ package.title }}</h3>
-                        <div class="review-rating">
-                            <span class="rating">⭐ {{ package.rating }}</span>
-                            <span class="reviews">({{ package.reviews }} reviews)</span>
-                        </div>
-                    </a>    
-                </div>
-                {% empty %}
-                <p>No packages available.</p>
-                {% endfor %}
-            </section>
+    <!-- Package Section -->
+    <section class="package">
+        <div class="container">
+            {% for package in packages %}
+            <div class="package-card">                      
+                <a href="{% url 'package_detail' package.id %}">
+                    <img src="{{ package.image.url }}" alt="{{ package.title }}">    
+                    <h3>{{ package.title }}</h3>
+                    <div class="review-rating">
+                        <span class="rating">⭐ {{ package.rating }}</span>
+                        <span class="reviews">({{ package.reviews }} reviews)</span>
+                    </div>
+                </a>    
+            </div>
+            {% empty %}
+            <p>No packages available.</p>
+            {% endfor %}
         </div>
-    </main>
+    </section>
 
     <!-- Footer -->
     <footer>
