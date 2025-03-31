@@ -53,7 +53,7 @@ img {
 
 /*  Navigation Bar  */
 .navbar {
-    background-color: rgba(236, 234, 234, 0.9);
+    background-color: rgba(236, 234, 234, 0.3);
     color: #FFD700;
     height: auto;
     position: fixed;
