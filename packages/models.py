@@ -17,6 +17,22 @@ class Packages(models.Model):
     inclusions = models.TextField(default = "No inclusions specified")
     exclusions = models.TextField(default = "No exclusions specified")
     customers = models.ManyToManyField(Customer, through='booking.Booking', related_name='packages')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_featured = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']  # Packages by Last created
 
     def __str__(self):
         return self.title
+    
+    def is_visible(self):
+        return self.is_active
+    
+    
+    def get_image_url(self):
+        if self.image:
+            return self.image.url
+        return None

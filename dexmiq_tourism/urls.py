@@ -18,10 +18,10 @@ from django.urls import path, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
+from packages.views import homepage
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name="index.html"), name='homepage'),
+    path('', homepage, name='homepage'),
     path('admin/', admin.site.urls),
     path("api/", include("api.urls")), #For API links/paths
     path('payment/', include('payment.urls')),
