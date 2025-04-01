@@ -74,60 +74,6 @@ a {
     align-items: center;
 }
 
-.borabora-package .hero {
-    background-image: url(./images/borabora1.png);
-}
-
-.maldives-package .hero {
-    background-image: url(./images/Maldiveshero.jfif);
-}
-
-.amalficoast-package .hero {
-    background-image: url(./images/AmalfiCoastHero.png);
-}
-
-.lakelouise-package .hero {
-    background-image: url(./images/LakeLouiseHero.jpg);
-}
-
-.kyoto-package .hero {
-    background-image: url(./images/KyotoHero.webp);
-}
-
-.seychelles-package .hero {
-    background-image: url(./images/SeychellesHero.jpg);
-}
-
-.santorini-package .hero {
-    background-image: url(./images/SantoriniHero.jpg);
-}
-
-.santorini-package .hero {
-    background-image: url(./images/SantoriniHero.jpg);
-}
-
-.bali-package .hero {
-    background-image: url(./images/BaliHero.webp);
-}
-
-.udaipur-package .hero {
-    background-image: url(./images/UdaipurHero.jfif);
-}
-
-.goa-package .hero {
-    background-image: url(./images/GoaHero.avif);
-}
-
-.keralabackwaters-package .hero {
-    background-image: url(./images/KeralaBackwatersHero);
-}
-
-.coorg-package .hero {
-    background-image: url(./images/CoorgHero.jpg);
-}
-
-
-
 .hero::before {
     content: '';
     position: absolute;
@@ -190,9 +136,11 @@ a {
     border-radius: 8px;
     padding: 20px;
     text-align: center;
-    font-family: 'Roboto', 'Arial', sans-serif; /* Modern, clean fonts */
-    color: #333; /* Neutral color for readability */
+    font-family: 'Roboto', 'Arial', sans-serif;
+    color: #333;
     line-height: 1.5;
+    position: relative;
+    padding-bottom: 60px; /* Add space for the bottom info */
 }
 
 .package-detail-card h3 {
@@ -208,9 +156,14 @@ a {
 }
 
 .bottom-info {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
     font-size: 16px;
     color: #777;
 }

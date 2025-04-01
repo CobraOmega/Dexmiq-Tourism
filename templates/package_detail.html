@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ package.title }} - Dexmiq Tourism</title>
-    <link rel="stylesheet" href="{% static 'css/stylemain.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -24,7 +24,7 @@
     <section class="hero">
         <div class="hero-text">
             <h1>{{ package.title }}</h1>
-            <p>{{ package.short_description }}</p>
+            <p>{{ package.long_description }} </p>
             <div class="itinerary-view">
                 <a href="#itinerary" class="itinerary-btn">View Itinerary</a>
             </div>
@@ -35,15 +35,14 @@
     <div class="container">
         <section class="package-detail">
             <div class="package-detail-card">
-                <img src="{{ package.image.url }}" alt="{{ package.title }}">
                 <h3>{{ package.title }}</h3>
                 <div class="review-rating">
                     <span class="rating">⭐ {{ package.rating }}</span>
                     <span class="reviews">({{ package.reviews }} reviews)</span>
                 </div>
-                <p class="package-description">
-                    {{ package.long_description }}
-                </p>
+                
+                <p>{{ package.short_description }}</p>
+                
                 <div class="bottom-info">
                     <span class="duration">{{ package.duration }}</span>
                     <span class="price">₹{{ package.price }}</span>
@@ -82,7 +81,7 @@
         <section id="book-now" class="book-now">
             <h2>Ready to Book?</h2>
             <p>Don't miss out on this once-in-a-lifetime experience. Secure your spot now!</p>
-            <a href="{% url 'booking' %}" class="book-btn">Book Now</a>
+            <a href="" class="book-btn">Book Now</a>
         </section>
     </div>
 
