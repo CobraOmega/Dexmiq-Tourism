@@ -19,7 +19,7 @@ class PackagesAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('title', 'image', 'price', 'duration', 'destination')
+            'fields': ('title', 'image', 'hero_image', 'price', 'duration', 'destination')
         }),
         ('Descriptions', {
             'fields': ('short_description', 'long_description')

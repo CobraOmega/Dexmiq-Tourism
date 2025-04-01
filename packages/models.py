@@ -5,6 +5,7 @@ class Packages(models.Model):
     id = models.AutoField(primary_key = True)
     title = models.CharField(max_length = 50)
     image = models.ImageField(upload_to = 'packages/')
+    hero_image = models.ImageField(upload_to = 'hero_images/')
     rating = models.FloatField(default = 0.0)
     reviews = models.IntegerField(default = 0)
     price = models.IntegerField(default = 0)

@@ -21,13 +21,11 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" style="background-image: url('{{ package.hero_image.url }}');">
         <div class="hero-text">
-            <h1>{{ package.title }}</h1>
-            <p>{{ package.long_description }} </p>
-            <div class="itinerary-view">
-                <a href="#itinerary" class="itinerary-btn">View Itinerary</a>
-            </div>
+            <h1>{{ package.title }} - {{ package.destination }}</h1>
+            <p>{{package.long_description }}</p>
+            <a href="#itinerary" class="itinerary-btn">View Itinerary</a>
         </div>
     </section>
 
@@ -42,7 +40,7 @@
                 </div>
                 
                 <p>{{ package.short_description }}</p>
-                
+
                 <div class="bottom-info">
                     <span class="duration">{{ package.duration }}</span>
                     <span class="price">₹{{ package.price }}</span>
