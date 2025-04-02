@@ -14,6 +14,8 @@ from customer.models import Customer
 from .models import CustomUser
 from .serializers import CustomerSerializer, RegisterSerializer, LoginSerializer
 from .tokens import generate_token
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -94,3 +96,82 @@ class ProtectedView(APIView):
 
     def get(self, request):
         return Response({"message": "This is a protected route"}, status=status.HTTP_200_OK)
+
+# Frontend views
+def signup_view(request):
+    if request.method == 'POST':
+        # Handle form submission
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        
+        if password1 != password2:
+            messages.error(request, "Passwords don't match")
+            return redirect('signup')
+        
+        # Check if user already exists
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect('signup')
+        
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists")
+            return redirect('signup')
+        
+        # Create user
+        user = CustomUser.objects.create_user(
+            username=username,
+            email=email,
+            password=password1
+        )
+        user.is_active = False
+        user.save()
+        
+        # Send activation email
+        current_site = get_current_site(request)
+        email = EmailMessage(
+            subject='Confirm your email @ Dexmiq_Tourism!',
+            body=f"Hello {user.username},\n\nClick the link below to verify your email:\n\n"
+                 f"http://{current_site.domain}/customer/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",
+            from_email=settings.EMAIL_HOST_USER,
+            to=[user.email]
+        )
+        email.send()
+        
+        messages.success(request, "Registration successful. Please check your email to activate your account.")
+        return redirect('login')
+    
+    return render(request, 'signup.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('homepage')
+        else:
+            messages.error(request, "Invalid username or password")
+            return redirect('login')
+    
+    return render(request, 'login.html')
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+        user = None
+    
+    if user is not None and generate_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Your account has been activated. You can now login.")
+        return redirect('login')
+    else:
+        messages.error(request, "Activation link is invalid or has expired.")
+        return redirect('signup')

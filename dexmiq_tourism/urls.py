@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/", include("api.urls")), #For API links/paths
     path('payment/', include('payment.urls')),
+    path('customer/', include('customer.urls')), # Add customer app URLs
 ]
 
 if settings.DEBUG:  
