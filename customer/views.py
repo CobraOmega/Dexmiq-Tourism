@@ -101,8 +101,11 @@ class ProtectedView(APIView):
 def signup_view(request):
     if request.method == 'POST':
         # Handle form submission
-        username = request.POST.get('username')
         email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+        country = request.POST.get('country')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         
@@ -111,19 +114,22 @@ def signup_view(request):
             return redirect('signup')
         
         # Check if user already exists
-        if CustomUser.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-            return redirect('signup')
-        
         if CustomUser.objects.filter(email=email).exists():
             messages.error(request, "Email already exists")
             return redirect('signup')
         
+        if CustomUser.objects.filter(phone_number=phone_number).exists():
+            messages.error(request, "Phone number already exists")
+            return redirect('signup')
+        
         # Create user
         user = CustomUser.objects.create_user(
-            username=username,
             email=email,
-            password=password1
+            password=password1,
+            first_name=first_name,
+            last_name=last_name,
+            phone_number=phone_number,
+            country=country
         )
         user.is_active = False
         user.save()
@@ -132,8 +138,8 @@ def signup_view(request):
         current_site = get_current_site(request)
         email = EmailMessage(
             subject='Confirm your email @ Dexmiq_Tourism!',
-            body=f"Hello {user.username},\n\nClick the link below to verify your email:\n\n"
-                 f"http://{current_site.domain}/customer/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",
+            body=f"Hello {user.first_name},\n\nClick the link below to verify your email:\n\n"
+                 f"http://{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",
             from_email=settings.EMAIL_HOST_USER,
             to=[user.email]
         )
@@ -146,16 +152,26 @@ def signup_view(request):
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
         
-        user = authenticate(username=username, password=password)
+        # Get user by email
+        try:
+            user = CustomUser.objects.get(email=email)
+            # Authenticate with username (which is email in this case)
+            user = authenticate(username=user.username, password=password)
+        except CustomUser.DoesNotExist:
+            user = None
         
         if user is not None:
-            login(request, user)
-            return redirect('homepage')
+            if user.is_active:
+                login(request, user)
+                return redirect('homepage')
+            else:
+                messages.error(request, "Your account is not activated. Please check your email for activation link.")
+                return redirect('login')
         else:
-            messages.error(request, "Invalid username or password")
+            messages.error(request, "Invalid email or password")
             return redirect('login')
     
     return render(request, 'login.html')

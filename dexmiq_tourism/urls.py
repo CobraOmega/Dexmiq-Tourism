@@ -23,9 +23,10 @@ from packages.views import homepage
 urlpatterns = [
     path('', homepage, name='homepage'),
     path('admin/', admin.site.urls),
-    path("api/", include("api.urls")), #For API links/paths
+    path('api/', include('api.urls')),
+    path('api/customer/', include('customer.api_urls')),  # API routes
+    path('', include('customer.urls')),  # Frontend routes
     path('payment/', include('payment.urls')),
-    path('customer/', include('customer.urls')), # Add customer app URLs
 ]
 
 if settings.DEBUG:  
