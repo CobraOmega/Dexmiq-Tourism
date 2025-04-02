@@ -39,9 +39,9 @@ class RegisterView(generics.CreateAPIView):
             email = EmailMessage(
             subject='Confirm your email @ Dexmiq_Tourism!',  
             body = f"Hello {user.first_name},\n\nClick the link below to verify your email:\n\n" \
-                 f"http://{current_site.domain}/api/auth/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",  
+                 f"http://{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",  
             from_email=settings.EMAIL_HOST_USER,  
-            to=[user.email]  # ✅ Ensure `to` is a list
+            to=[user.email]
         )
             email.send()
 
@@ -118,35 +118,51 @@ def signup_view(request):
             messages.error(request, "Email already exists")
             return redirect('signup')
         
-        if CustomUser.objects.filter(phone_number=phone_number).exists():
+        if Customer.objects.filter(phone_number=phone_number).exists():
             messages.error(request, "Phone number already exists")
             return redirect('signup')
         
-        # Create user
-        user = CustomUser.objects.create_user(
-            email=email,
-            password=password1,
-            first_name=first_name,
-            last_name=last_name,
-            phone_number=phone_number,
-            country=country
-        )
-        user.is_active = False
-        user.save()
-        
-        # Send activation email
-        current_site = get_current_site(request)
-        email = EmailMessage(
-            subject='Confirm your email @ Dexmiq_Tourism!',
-            body=f"Hello {user.first_name},\n\nClick the link below to verify your email:\n\n"
-                 f"http://{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",
-            from_email=settings.EMAIL_HOST_USER,
-            to=[user.email]
-        )
-        email.send()
-        
-        messages.success(request, "Registration successful. Please check your email to activate your account.")
-        return redirect('login')
+        try:
+            # Create user with authentication info
+            user = CustomUser.objects.create_user(
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name
+            )
+            user.is_active = False
+            user.save()
+
+            # Create customer profile with business info
+            customer = Customer.objects.create(
+                user=user,
+                phone_number=phone_number,
+                country=country
+            )
+            
+            try:
+                # Send activation email
+                current_site = get_current_site(request)
+                email_message = EmailMessage(
+                    subject='Confirm your email @ Dexmiq_Tourism!',
+                    body=f"Hello {user.first_name},\n\nClick the link below to verify your email:\n\n"
+                         f"http://{current_site.domain}/activate/{urlsafe_base64_encode(force_bytes(user.pk))}/{generate_token.make_token(user)}/",
+                    from_email=settings.EMAIL_HOST_USER,
+                    to=[user.email]
+                )
+                email_message.send()
+                messages.success(request, "Registration successful. Please check your email to activate your account.")
+            except Exception as e:
+                # If email fails, still create the account but inform the user
+                user.is_active = True  # Activate the user anyway
+                user.save()
+                messages.warning(request, "Account created successfully, but we couldn't send the activation email. You can log in now.")
+            
+            return redirect('login')
+            
+        except Exception as e:
+            messages.error(request, "An error occurred during registration. Please try again.")
+            return redirect('signup')
     
     return render(request, 'signup.html')
 
