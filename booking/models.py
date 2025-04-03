@@ -20,10 +20,11 @@ class Booking(models.Model):
 
     # Calculation of price according to number of people
     def save(self, *args, **kwargs):
+        # Calculate total price
         if self.package:
             self.total_price = self.package.price * self.number_of_people
 
-    # Prevention of double booking
+        # Prevention of double booking
         existing_booking = Booking.objects.filter(
             customer = self.customer,
             package = self.package,
@@ -31,8 +32,9 @@ class Booking(models.Model):
         ).exclude(id=self.id)
     
         if existing_booking.exists():
-            raise ValidationError("You have already booking for selected date!")
+            raise ValidationError("You have already booked for selected date!")
         
+        # Call the parent save method
         super().save(*args, **kwargs)
 
     # Validation of booking (number of people, date of travel)

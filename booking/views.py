@@ -17,6 +17,11 @@ class BookingReadView(generics.ListAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
+#UPDATE
+class BookingUpdateView(generics.UpdateAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+
 #DELETE/DESTROY
 class BookingDeleteView(generics.DestroyAPIView):
     queryset = Booking.objects.all()
