@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Dexmiq Tourism</title>
+    <link rel="stylesheet" href="{% static 'css/stylemain.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="container flex">
+            <a href="{% url 'homepage' %}" class="logo"><h1>Dexmiq Tourism</h1></a>
+            <nav id="navbar">
+                <ul>
+                    <li><a href="{% url 'homepage' %}">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="{% url 'profile' %}" class="active">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                        <p class="email">{{ user.email }}</p>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Bookings</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number">0</span>
+                                <span class="stat-label">Reviews</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-tabs">
+                        <button class="tab-btn active" data-tab="bookings">My Bookings</button>
+                        <button class="tab-btn" data-tab="reviews">My Reviews</button>
+                        <button class="tab-btn" data-tab="settings">Settings</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="bookings">
+                            <h3>Your Bookings</h3>
+                            <div class="bookings-list">
+                                <p class="no-bookings">You haven't made any bookings yet.</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="reviews">
+                            <h3>Your Reviews</h3>
+                            <div class="reviews-list">
+                                <p class="no-reviews">You haven't written any reviews yet.</p>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane" id="settings">
+                            <h3>Account Settings</h3>
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" id="username" value="{{ user.username }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" value="{{ user.email }}" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Change Password</label>
+                                    <input type="password" id="password" placeholder="New Password">
+                                </div>
+                                <button type="submit" class="save-btn">Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Dexmiq Tourism is your trusted partner in creating unforgettable travel experiences.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'homepage' %}">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                    <li><i class="fas fa-envelope"></i> info@dexmiqtourism.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Dexmiq Travels. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html> 

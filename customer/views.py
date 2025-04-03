@@ -207,3 +207,10 @@ def activate_account(request, uidb64, token):
     else:
         messages.error(request, "Activation link is invalid or has expired.")
         return redirect('signup')
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "Please login to view your profile.")
+        return redirect('login')
+    
+    return render(request, 'profile.html', {'user': request.user})

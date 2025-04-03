@@ -11,6 +11,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('package/<int:id>/', package_detail, name='package_detail'),
 ]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
