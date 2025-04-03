@@ -44,4 +44,4 @@ class Booking(models.Model):
             raise ValidationError("Minimum of 1 people required for booking!")
 
     def __str__(self):
-        return f"Booking {self.id}  - {self.customer.first_name} {self.customer.last_name} - {self.package.title}"
+        return f"Booking {self.id} - {self.customer.user.first_name} {self.customer.user.last_name} - {self.package.title}"

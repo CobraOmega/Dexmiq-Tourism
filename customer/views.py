@@ -213,4 +213,23 @@ def profile_view(request):
         messages.error(request, "Please login to view your profile.")
         return redirect('login')
     
-    return render(request, 'profile.html', {'user': request.user})
+    try:
+        # Get the customer profile and their bookings
+        customer = request.user.customer_profile
+        bookings = customer.bookings.all().order_by('-booking_date')
+    except Customer.DoesNotExist:
+        # For admin users or users without customer profile
+        bookings = []
+    
+    context = {
+        'user': request.user,
+        'bookings': bookings,
+        'booking_count': len(bookings)
+    }
+    
+    return render(request, 'profile.html', context)
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('homepage')
