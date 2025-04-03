@@ -1,5 +1,9 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from .models import Booking
 from .serializers import BookingSerializer
 
@@ -74,3 +78,37 @@ class BookingDeleteView(generics.DestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+
+# Payment integration (from booking to payment)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def initiate_payment(request, pk):
+    """
+    Initiate payment for a booking.
+    This endpoint validates the booking and returns the payment checkout URL.
+    """
+    booking = get_object_or_404(Booking, pk=pk)
+    
+    # Check if user is authorized to pay for this booking
+    if not request.user.is_staff and booking.customer.user != request.user:
+        return Response(
+            {"error": "You are not authorized to make payment for this booking."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    # Check if booking is already paid or cancelled
+    if booking.status == 'cancelled':
+        return Response(
+            {"error": "Cannot process payment for a cancelled booking."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    # Generate checkout URL
+    checkout_url = request.build_absolute_uri(reverse('checkout', args=[booking.id]))
+    
+    return Response({
+        "message": "Redirecting to payment gateway",
+        "checkout_url": checkout_url,
+        "booking_id": booking.id,
+        "amount": booking.total_price
+    })

@@ -46,6 +46,11 @@ def payment_success(request, payment_id):
 
         payment.status = 'paid'
         payment.save()
+        
+        # Update booking status to confirmed after payment
+        booking = payment.booking
+        booking.status = 'confirmed'
+        booking.save()
 
         return render(request, "payment/success.html", {"payment": payment})
 
