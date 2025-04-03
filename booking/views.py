@@ -33,11 +33,35 @@ class BookingReadView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        # Admin users can see all bookings
-        if self.request.user.is_staff:
-            return Booking.objects.all()
-        # Regular users can only see their own bookings
-        return Booking.objects.filter(customer__user=self.request.user)
+        queryset = Booking.objects.all()
+        
+        # Admin users can see all bookings, users can only see their own
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(customer__user=self.request.user)
+        
+        # Filter by status (pending, confirmed, cancelled)
+        status = self.request.query_params.get('status', None)
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Filter by booking date
+        booking_date = self.request.query_params.get('booking_date', None)
+        if booking_date:
+            queryset = queryset.filter(booking_date=booking_date)
+        
+        # Filter by travel date
+        travel_date = self.request.query_params.get('travel_date', None)
+        if travel_date:
+            queryset = queryset.filter(travel_date=travel_date)
+        
+        # Filter by package
+        package_id = self.request.query_params.get('package_id', None)
+        if package_id:
+            queryset = queryset.filter(package_id=package_id)
+            
+        # Sort results
+        ordering = self.request.query_params.get('ordering', '-booking_date')  # Default: newest first
+        return queryset.order_by(ordering)
 
 #UPDATE
 class BookingUpdateView(generics.UpdateAPIView):
