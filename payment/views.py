@@ -3,20 +3,32 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 from booking.models import Booking
 from . models import Payment
+from decimal import Decimal
+import math
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def create_checkout_session(request, id):
     try:
-
         booking = get_object_or_404(Booking, id = id)  #booking details
+
+        # Check if total_price is valid
+        if booking.total_price is None or math.isinf(booking.total_price) or math.isnan(booking.total_price):
+            # Handle invalid total_price
+            return render(request, "error.html", {"message": "Invalid booking price. Please contact support."})
+        
+        # Set a maximum price to avoid potential issues
+        safe_price = min(booking.total_price, 999999.99)
+        
+        # Convert float to Decimal for the payment model
+        amount_as_decimal = Decimal(str(safe_price))
 
         # For payment status == pending & to check is a payment is created
         payment, created = Payment.objects.get_or_create(
             booking=booking,
             defaults={
                 "user": request.user,
-                "amount": booking.total_price,
+                "amount": amount_as_decimal,
                 "status": "pending",
             }
         )
@@ -27,9 +39,9 @@ def create_checkout_session(request, id):
                 'price_data': {
                     'currency' : 'inr',
                     'product_data' : {'name': booking.package.title},
-                    'amount' : int(booking.total_price * 100),     #stripe stores amount in paisa (1 rupee == 100 paisa)
-                    'quantity': 1,
+                    'unit_amount' : int(safe_price * 100),     #stripe stores amount in paisa (1 rupee == 100 paisa)
                 },
+                'quantity': 1,
             }],
             mode = 'payment',
             success_url = f'http://127.0.0.1:8000/payment/success/{payment.payment_id}/',
@@ -39,6 +51,9 @@ def create_checkout_session(request, id):
     
     except Booking.DoesNotExist:
         return render(request, "error.html", {"message": "Booking does not exist"})
+    except Exception as e:
+        # Catch any other errors
+        return render(request, "error.html", {"message": f"Payment processing error: {str(e)}"})
     
 def payment_success(request, payment_id):
     try:

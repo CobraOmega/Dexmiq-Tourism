@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/customer/', include('customer.api_urls')),  # API routes
     path('', include('customer.urls')),  # Frontend routes
+    path('', include('booking.urls')),   # Booking web routes
     path('payment/', include('payment.urls')),
 ]
 

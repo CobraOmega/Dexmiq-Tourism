@@ -11,14 +11,12 @@ from .serializers import BookingSerializer
 from packages.models import Packages
 
 class IsOwnerOrAdmin(permissions.BasePermission):
-    """
-    Custom permission to only allow owners of a booking or admins to view/edit it.
-    """
+    
     def has_object_permission(self, request, view, obj):
-        # Admin users can access any booking
+        
         if request.user.is_staff:
             return True
-        # Otherwise, users can only access their own bookings
+        
         return obj.customer.user == request.user
 
 #CREATE
@@ -27,7 +25,7 @@ class BookingCreateView(generics.CreateAPIView):
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated]
 
-#READ/RETRIEVE one booking
+#READ one booking
 class BookingDetailView(generics.RetrieveAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
@@ -76,39 +74,34 @@ class BookingUpdateView(generics.UpdateAPIView):
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 
-#DELETE/DESTROY
+#DELETE/
 class BookingDeleteView(generics.DestroyAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 
 # Payment integration (from booking to payment)
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@api_view(['GET', 'POST'])
 def initiate_payment(request, pk):
-    """
-    Initiate payment for a booking.
-    This endpoint validates the booking and returns the payment checkout URL.
-    """
+    # Check if user is authenticated (via session or token)
+    if not request.user.is_authenticated:
+        return Response({"detail": "Authentication credentials were not provided."}, 
+                      status=status.HTTP_401_UNAUTHORIZED)
+    
     booking = get_object_or_404(Booking, pk=pk)
     
     # Check if user is authorized to pay for this booking
-    if not request.user.is_staff and booking.customer.user != request.user:
-        return Response(
-            {"error": "You are not authorized to make payment for this booking."},
-            status=status.HTTP_403_FORBIDDEN
-        )
+    if booking.customer.user != request.user and not request.user.is_staff:
+        return Response({"error": "You are not authorized to make payment for this booking."},
+                       status=status.HTTP_403_FORBIDDEN)
     
     # Check if booking is already paid or cancelled
     if booking.status == 'cancelled':
-        return Response(
-            {"error": "Cannot process payment for a cancelled booking."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"error": "Cannot process payment for a cancelled booking."},
+                       status=status.HTTP_400_BAD_REQUEST)
     
-    # Generate checkout URL
-    checkout_url = request.build_absolute_uri(reverse('checkout', args=[booking.id]))
-    
+    # Return the checkout URL for API clients
+    checkout_url = request.build_absolute_uri(f'/payment/checkout/{booking.id}/')
     return Response({
         "message": "Redirecting to payment gateway",
         "checkout_url": checkout_url,
@@ -116,15 +109,32 @@ def initiate_payment(request, pk):
         "amount": booking.total_price
     })
 
+# Separate view for web payment flow
+@login_required
+def web_initiate_payment(request, pk):
+    
+    booking = get_object_or_404(Booking, pk=pk)
+    
+    # Check if user is authorized to pay for this booking
+    if booking.customer.user != request.user and not request.user.is_staff:
+        return render(request, "error.html", 
+                     {"message": "You are not authorized to make payment for this booking."})
+    
+    # Check if booking is already paid or cancelled
+    if booking.status == 'cancelled':
+        return render(request, "error.html", 
+                     {"message": "Cannot process payment for a cancelled booking."})
+    
+    # Direct redirect to payment checkout
+    return redirect(f'/payment/checkout/{booking.id}/')
+
 @login_required
 def booking_view(request, package_id):
-    """
-    Render the booking form for a specific package
-    """
+   
     package = get_object_or_404(Packages, id=package_id)
     min_date = timezone.now().date()
     
-    # Check if user has a customer profile
+    # Check if user has a profile
     error_message = None
     try:
         request.user.customer_profile
@@ -144,20 +154,18 @@ def booking_view(request, package_id):
 
 @login_required
 def create_booking(request):
-    """
-    Process the booking form submission
-    """
+    
     if request.method == 'POST':
-        # Get form data
+        
         package_id = request.POST.get('package_id')
         travel_date = request.POST.get('travel_date')
         number_of_people = request.POST.get('number_of_people')
         
-        # Get the package and customer objects
+        
         package = get_object_or_404(Packages, id=package_id)
         
         try:
-            # Get the customer profile using the correct related name
+            
             try:
                 customer = request.user.customer_profile
             except AttributeError:

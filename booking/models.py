@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from customer.models import Customer
 from packages.models import Packages
+import math
 
 class Booking(models.Model):
     id = models.AutoField(primary_key = True)
@@ -22,7 +23,23 @@ class Booking(models.Model):
     def save(self, *args, **kwargs):
         # Calculate total price
         if self.package:
-            self.total_price = self.package.price * self.number_of_people
+            # Calculate price safely
+            try:
+                base_price = float(self.package.price)
+                people = max(1, int(self.number_of_people))  # Ensure at least 1 person
+                
+                # Set a maximum to prevent overflow
+                if base_price > 999999.99 or people > 100:
+                    self.total_price = 999999.99
+                else:
+                    self.total_price = base_price * people
+                
+                # Validate the result
+                if math.isinf(self.total_price) or math.isnan(self.total_price):
+                    self.total_price = 999999.99  # Set to a safe maximum
+            except:
+                # Fallback for any errors
+                self.total_price = 0.0
 
         # Prevention of double booking
         existing_booking = Booking.objects.filter(

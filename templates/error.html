@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Dexmiq Tourism</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="container flex">
+            <a href="{% url 'homepage' %}"><h1 class="logo">Dexmiq Tourism</h1></a>
+            <nav id="navbar">
+                <ul>
+                    <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Error Content -->
+    <div class="result-container error-container">
+        <div class="result-icon error-icon">⚠️</div>
+        <h1>Oops! Something went wrong</h1>
+        <p class="error-message">{{ message }}</p>
+        <div class="buttons">
+            <a href="{% url 'homepage' %}" class="button">Return to Home</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Dexmiq Tourism is your trusted partner in creating unforgettable travel experiences. We offer carefully curated packages to destinations worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'homepage' %}">Home</a></li>
+                    <li><a href="#">Destinations</a></li>
+                    <li><a href="#">Packages</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                    <li><i class="fas fa-envelope"></i> info@dexmiqtourism.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Travel Street, Tourism City</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Dexmiq Travels. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 
