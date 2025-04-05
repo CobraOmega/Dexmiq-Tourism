@@ -250,10 +250,10 @@ img {
 }
 
 .package-card h3 {
-    padding: 15px;
-    margin: 0;
-    font-size: 1.2rem;
-    color: #333;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 15px 0 10px;
+    color: #010250;
 }
 
 .review-rating {
@@ -281,6 +281,28 @@ img {
     font-weight: bold;
     color: #27ae60;
   }
+
+.booking-section {
+    padding: 0 15px 15px;
+    text-align: center;
+}
+
+.book-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #010250;
+    color: #fff;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.book-btn:hover {
+    background-color: #020370;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
 /* Footer */
 footer {

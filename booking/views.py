@@ -2,10 +2,13 @@ from rest_framework import generics, permissions, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 from .models import Booking
 from .serializers import BookingSerializer
+from packages.models import Packages
 
 class IsOwnerOrAdmin(permissions.BasePermission):
     """
@@ -112,3 +115,78 @@ def initiate_payment(request, pk):
         "booking_id": booking.id,
         "amount": booking.total_price
     })
+
+@login_required
+def booking_view(request, package_id):
+    """
+    Render the booking form for a specific package
+    """
+    package = get_object_or_404(Packages, id=package_id)
+    min_date = timezone.now().date()
+    
+    # Check if user has a customer profile
+    error_message = None
+    try:
+        request.user.customer_profile
+    except AttributeError:
+        error_message = "You need to complete your customer profile before booking. Please update your profile information."
+    
+    context = {
+        'package': package,
+        'min_date': min_date,
+        'user': request.user
+    }
+    
+    if error_message:
+        context['error_message'] = error_message
+    
+    return render(request, 'booking.html', context)
+
+@login_required
+def create_booking(request):
+    """
+    Process the booking form submission
+    """
+    if request.method == 'POST':
+        # Get form data
+        package_id = request.POST.get('package_id')
+        travel_date = request.POST.get('travel_date')
+        number_of_people = request.POST.get('number_of_people')
+        
+        # Get the package and customer objects
+        package = get_object_or_404(Packages, id=package_id)
+        
+        try:
+            # Get the customer profile using the correct related name
+            try:
+                customer = request.user.customer_profile
+            except AttributeError:
+                return render(request, 'booking.html', {
+                    'package': package,
+                    'min_date': timezone.now().date(),
+                    'user': request.user,
+                    'error_message': "You need to complete your customer profile before booking. Please update your profile information."
+                })
+            
+            # Create the booking
+            booking = Booking(
+                package=package,
+                customer=customer,
+                travel_date=travel_date,
+                number_of_people=number_of_people
+            )
+            
+            booking.save()
+            # Redirect to payment or confirmation
+            return redirect(reverse('initiate_payment', args=[booking.id]))
+        except Exception as e:
+            # Handle validation errors
+            return render(request, 'booking.html', {
+                'package': package,
+                'min_date': timezone.now().date(),
+                'user': request.user,
+                'error_message': str(e)
+            })
+    
+    # If not POST, redirect to homepage
+    return redirect('homepage')

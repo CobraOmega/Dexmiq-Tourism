@@ -14,7 +14,7 @@
             <a href="{% url 'homepage' %}"><h1 class="logo">Dexmiq Tourism</h1></a>
             <nav id="navbar">
                 <ul>
-                    <li><a href="{% url 'signup' %}" class="file">Profile</a></li>
+                    <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
                 </ul>
             </nav>
         </div>
@@ -46,7 +46,7 @@
                     <span class="price">₹{{ package.price }}</span>
                 </div>
                 <div class="booking-section">
-                    <a href="#book-now" class="book-btn">Book Now</a>
+                    <a href="{% url 'booking_view' package.id %}" class="book-btn">Book Now</a>
                 </div>
             </div>
         </section>
@@ -79,7 +79,7 @@
         <section id="book-now" class="book-now">
             <h2>Ready to Book?</h2>
             <p>Don't miss out on this once-in-a-lifetime experience. Secure your spot now!</p>
-            <a href="" class="book-btn">Book Now</a>
+            <a href="{% url 'booking_view' package.id %}" class="book-btn">Book Now</a>
         </section>
     </div>
 

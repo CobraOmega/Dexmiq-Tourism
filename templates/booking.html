@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Trip - Dexmiq Tourism</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/booking.css' %}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="container flex">
+            <a href="{% url 'homepage' %}"><h1 class="logo">Dexmiq Tourism</h1></a>
+            <nav id="navbar">
+                <ul>
+                    <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Booking Content -->
+    <div class="booking-container">
+        <div class="booking-header">
+            <h1>Book Your Trip</h1>
+            <p>Please fill in the details below to book your perfect vacation</p>
+        </div>
+        
+        {% if error_message %}
+        <div class="error-notification">
+            <p>{{ error_message }}</p>
+        </div>
+        {% endif %}
+
+        <div class="booking-grid">
+            <div class="booking-form">
+                <form id="booking-form" method="post" action="{% url 'create_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="package_id" value="{{ package.id }}">
+                    
+                    <div class="form-group">
+                        <label for="travel_date">Travel Date</label>
+                        <input type="date" id="travel_date" name="travel_date" required min="{{ min_date|date:'Y-m-d' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="number_of_people">Number of Travelers</label>
+                        <select id="number_of_people" name="number_of_people" required>
+                            {% for i in "12345678910"|make_list %}
+                                <option value="{{ forloop.counter }}">{{ forloop.counter }} {% if forloop.counter == 1 %}Person{% else %}People{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" name="first_name" required value="{{ user.first_name }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" required value="{{ user.last_name }}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required value="{{ user.email }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required value="{{ user.customer_profile.phone_number|default:'' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="special_requests">Special Requests (Optional)</label>
+                        <input type="text" id="special_requests" name="special_requests" placeholder="Any special requirements or preferences?">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="booking-summary">
+                <h3>Booking Summary</h3>
+                <img src="{{ package.image.url }}" alt="{{ package.title }}" class="package-image">
+                <h4>{{ package.title }}</h4>
+                <p class="summary-description">{{ package.short_description }}</p>
+                
+                <div class="summary-item">
+                    <span>Base Price:</span>
+                    <span>₹{{ package.price }} per person</span>
+                </div>
+                
+                <div class="summary-item">
+                    <span>Number of Travelers:</span>
+                    <span id="traveler-count">1</span>
+                </div>
+                
+                <div class="summary-item total">
+                    <span>Total:</span>
+                    <span id="total-price">₹{{ package.price }}</span>
+                </div>
+                
+                <button type="submit" form="booking-form" class="book-now-btn">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Dexmiq Tourism is your trusted partner in creating unforgettable travel experiences. We offer carefully curated packages to destinations worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'homepage' %}">Home</a></li>
+                    <li><a href="#">Destinations</a></li>
+                    <li><a href="#">Packages</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                    <li><i class="fas fa-envelope"></i> info@dexmiqtourism.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Travel Street, Tourism City</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Dexmiq Travels. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Script to dynamically update the booking summary
+        document.addEventListener('DOMContentLoaded', function() {
+            const numberOfPeopleSelect = document.getElementById('number_of_people');
+            const travelerCountSpan = document.getElementById('traveler-count');
+            const totalPriceSpan = document.getElementById('total-price');
+            const basePrice = {{ package.price|default:0 }};
+            
+            // Function to update the booking summary
+            function updateSummary() {
+                const numberOfPeople = parseInt(numberOfPeopleSelect.value);
+                travelerCountSpan.textContent = numberOfPeople;
+                totalPriceSpan.textContent = '₹' + (basePrice * numberOfPeople).toLocaleString();
+            }
+            
+            // Add event listeners
+            numberOfPeopleSelect.addEventListener('change', updateSummary);
+            
+            // Initial update
+            updateSummary();
+        });
+    </script>
+</body>
+</html> 
