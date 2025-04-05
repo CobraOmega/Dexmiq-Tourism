@@ -13,13 +13,19 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
-from . info import *
+import dotenv
+# Remove import from info.py since we're using environment variables now
+# from . info import *
 
-EMAIL_USE_TLS = EMAIL_USE_TLS
-EMAIL_HOST = EMAIL_HOST
-EMAIL_HOST_USER = EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
-EMAIL_PORT = EMAIL_PORT
+# Load environment variables from .env file
+dotenv.load_dotenv()
+
+# Email settings from environment variables
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') == 'True'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +35,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-jsat$w(meds3%))9(y_y^6l&e!!z+3dsp1@8p-6*5=#31kc9^5'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-jsat$w(meds3%))9(y_y^6l&e!!z+3dsp1@8p-6*5=#31kc9^5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -168,8 +174,8 @@ SIMPLE_JWT = {
 }
 
 # API Keys for payment (Stripe)
-STRIPE_PUBLIC_KEY = "pk_test_51R3xmq4Da8W5ozCrQtACy5mfoaBfQixBLBch68W4MQ3v7NlAXChAKeI81Rkbkyl7XRIkDjLWbuOUKXAs2bOZJl5300n0LNrsVE"
-STRIPE_SECRET_KEY = "sk_test_51R3xmq4Da8W5ozCr7ECpet5IdztpMhqxX96EWb6ky3Ah21mt1GKgzkCUjROOP3AogMTzx6hGYB5umhqmBxFGnAnp00ZAdyLsvn"
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 
 # CSRF Trusted Origins (local testing)
 CSRF_TRUSTED_ORIGINS = ['https://checkout.stripe.com']

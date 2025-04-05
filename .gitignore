@@ -1,1 +1,12 @@
 dexmiq_tourism/info.py
+.env
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+.env.local
+db.sqlite3-journal
