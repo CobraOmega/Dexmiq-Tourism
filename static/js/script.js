@@ -46,20 +46,54 @@ document.addEventListener('DOMContentLoaded', function() {
             navbar.classList.toggle('active');
         });
     }
-});
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        if (!this.classList.contains('sidebar-item')) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            if (!this.classList.contains('sidebar-item')) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             }
+        });
+    });
+    
+    // Initialize login notification
+    const bookButtons = document.querySelectorAll('.book-btn');
+    bookButtons.forEach(button => {
+        if (button.tagName === 'BUTTON') {
+            button.addEventListener('click', showLoginNotification);
         }
     });
-}); 
+    
+    // Close button for login notification
+    const closeButton = document.querySelector('.close-notification');
+    if (closeButton) {
+        closeButton.addEventListener('click', closeLoginNotification);
+    }
+});
+
+// Login Notification Functions
+function showLoginNotification() {
+    const notification = document.getElementById('loginNotification');
+    if (notification) {
+        notification.classList.add('show');
+        
+        // Auto hide after 10 seconds
+        setTimeout(function() {
+            closeLoginNotification();
+        }, 10000);
+    }
+}
+
+function closeLoginNotification() {
+    const notification = document.getElementById('loginNotification');
+    if (notification) {
+        notification.classList.remove('show');
+    }
+} 

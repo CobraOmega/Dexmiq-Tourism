@@ -203,6 +203,9 @@ a {
     border-radius: 5px;
     margin-top: 20px;
     transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+    text-align: center;
 }
 
 .book-btn:hover {
@@ -761,4 +764,69 @@ footer {
         margin-top: 30px;
         order: -1;
     }
+}
+
+/* Login Notification Popup */
+.login-notification {
+    position: fixed;
+    top: -100px;
+    left: 0;
+    right: 0;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 1px solid #f5c6cb;
+    z-index: 9999;
+    transition: top 0.5s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.login-notification.show {
+    top: 0;
+}
+
+.login-notification-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.login-notification-message {
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.login-notification-buttons {
+    display: flex;
+    gap: 10px;
+    margin-left: 15px;
+}
+
+.login-notification-buttons a {
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.signup-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.close-notification {
+    margin-left: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #721c24;
 }
