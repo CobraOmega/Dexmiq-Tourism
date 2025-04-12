@@ -15,7 +15,12 @@
             <a href="{% url 'homepage' %}"><h1 class="logo">Dexmiq Tourism</h1></a>
             <nav id="navbar">
                 <ul>
+                    {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

@@ -14,10 +14,15 @@
             <a href="{% url 'homepage' %}" class="logo"><h1>Dexmiq Tourism</h1></a>
             <nav id="navbar">
                 <ul>
-                    <li><a href="" Packages</a></li>
+                    <li><a href="">Packages</a></li>
                     <li><a href="#about">About Us</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#footer">Contact</a></li>
+                    {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
@@ -76,7 +81,7 @@
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer id="footer">
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About Us</h3>

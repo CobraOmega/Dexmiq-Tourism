@@ -1,5 +1,22 @@
 // Modern Profile Navigation
 document.addEventListener('DOMContentLoaded', function() {
+    // Navbar scroll behavior
+    const navbar = document.querySelector('.navbar');
+    
+    function checkScroll() {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    }
+    
+    // Check scroll position on page load
+    checkScroll();
+    
+    // Listen for scroll events
+    window.addEventListener('scroll', checkScroll);
+    
     // Sidebar Navigation
     const sidebarItems = document.querySelectorAll('.sidebar-item');
     const contentSections = document.querySelectorAll('.content-section');
@@ -39,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mobile Menu Toggle (if needed)
     const menuToggle = document.querySelector('.menu-toggle');
-    const navbar = document.querySelector('#navbar');
     
     if (menuToggle && navbar) {
         menuToggle.addEventListener('click', function() {
