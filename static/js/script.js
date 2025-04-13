@@ -112,4 +112,51 @@ function closeLoginNotification() {
     if (notification) {
         notification.classList.remove('show');
     }
-} 
+}
+
+// Profile Sidebar Navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Get sidebar items and content sections
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const contentSections = document.querySelectorAll('.content-section');
+    
+    // Add click event listeners to sidebar items
+    sidebarItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Remove active class from all sidebar items
+            sidebarItems.forEach(i => i.classList.remove('active'));
+            
+            // Add active class to clicked item
+            this.classList.add('active');
+            
+            // Get target section id from href attribute
+            const targetId = this.getAttribute('href').substring(1);
+            
+            // Hide all content sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            document.getElementById(targetId).classList.add('active');
+        });
+    });
+    
+    // Filter tabs for bookings
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remove active class from all tabs
+            filterTabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            this.classList.add('active');
+            
+            // Here you would add logic to filter bookings based on tab clicked
+            // For now, just a placeholder
+        });
+    });
+}); 

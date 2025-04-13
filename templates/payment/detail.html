@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Details - Dexmiq Tourism</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/payment.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="container flex">
+            <a href="{% url 'homepage' %}"><h1 class="logo">Dexmiq Tourism</h1></a>
+            <nav id="navbar">
+                <ul>
+                    <li><a href="{% url 'profile' %}" class="file">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Payment Details Content -->
+    <div class="result-container">
+        <h1>Payment Details</h1>
+        <div class="detail-status {{ payment.status }}">
+            <span class="status-badge">{{ payment.status|title }}</span>
+        </div>
+        
+        <div class="booking-details">
+            <h3>Transaction Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Payment ID:</span>
+                <span>{{ payment.payment_id }}</span>
+            </div>
+            {% if payment.stripe_charge_id %}
+            <div class="detail-row">
+                <span class="detail-label">Stripe Charge ID:</span>
+                <span>{{ payment.stripe_charge_id }}</span>
+            </div>
+            {% endif %}
+            <div class="detail-row">
+                <span class="detail-label">Amount:</span>
+                <span>₹{{ payment.amount }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="status {{ payment.status }}">{{ payment.status|title }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Date:</span>
+                <span>{{ payment.created_at }}</span>
+            </div>
+        </div>
+        
+        <div class="booking-details">
+            <h3>Package Details</h3>
+            <div class="detail-row">
+                <span class="detail-label">Package:</span>
+                <span>{{ payment.booking.package.title }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Travel Date:</span>
+                <span>{{ payment.booking.travel_date }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Number of Travelers:</span>
+                <span>{{ payment.booking.number_of_people }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Booking ID:</span>
+                <span>{{ payment.booking.id }}</span>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <a href="{% url 'profile' %}" class="button">Back to Profile</a>
+            {% if payment.status == 'paid' %}
+            <button class="button button-secondary" onclick="window.print()">Print Receipt</button>
+            {% elif payment.status == 'pending' %}
+            <a href="{% url 'payment_detail' payment_id=payment.payment_id %}" class="button button-primary">Complete Payment</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Dexmiq Tourism is your trusted partner in creating unforgettable travel experiences. We offer carefully curated packages to destinations worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'homepage' %}">Home</a></li>
+                    <li><a href="#">Destinations</a></li>
+                    <li><a href="#">Packages</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                    <li><i class="fas fa-envelope"></i> info@dexmiqtourism.com</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Travel Street, Tourism City</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Dexmiq Travels. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html> 

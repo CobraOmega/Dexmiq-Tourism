@@ -16,6 +16,7 @@ from .serializers import CustomerSerializer, RegisterSerializer, LoginSerializer
 from .tokens import generate_token
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from payment.models import Payment
 
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
@@ -217,14 +218,19 @@ def profile_view(request):
         # Get the customer profile and their bookings
         customer = request.user.customer_profile
         bookings = customer.bookings.all().order_by('-booking_date')
+        
+        # Get the user's payment history
+        payments = Payment.objects.filter(user=request.user).order_by('-created_at')
     except Customer.DoesNotExist:
         # For admin users or users without customer profile
         bookings = []
+        payments = []
     
     context = {
         'user': request.user,
         'bookings': bookings,
-        'booking_count': len(bookings)
+        'booking_count': len(bookings),
+        'payments': payments
     }
     
     return render(request, 'profile.html', context)

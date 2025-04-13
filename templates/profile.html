@@ -67,7 +67,7 @@
                         </a>
                         <a href="#payments" class="sidebar-item">
                             <i class="fas fa-credit-card"></i>
-                            <span>Payment Methods</span>
+                            <span>Payment History</span>
                         </a>
                         <a href="#addresses" class="sidebar-item">
                             <i class="fas fa-map-marker-alt"></i>
@@ -111,7 +111,12 @@
                                         </div>
                                         <div>
                                             <span class="booking-status {{ booking.status }}">{{ booking.status|title }}</span>
+                                            {% if booking.status == 'pending' or booking.status == 'confirmed' %}
                                             <button class="invoice-btn">Download Invoice</button>
+                                            {% endif %}
+                                            {% if booking.payment_set.first and booking.payment_set.first.status == 'pending' %}
+                                            <a href="{% url 'payment_detail' payment_id=booking.payment_set.first.payment_id %}" class="pay-now-btn">Pay Now</a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                     <div class="booking-details">
@@ -144,6 +149,49 @@
                                 <i class="fas fa-star"></i>
                             </div>
                             <p>You haven't written any reviews yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Payment History Section -->
+                    <div class="content-section" id="payments">
+                        <div class="content-header">
+                            <h3>Payment History</h3>
+                        </div>
+                        
+                        <div class="payments-list">
+                            {% if payments %}
+                                {% for payment in payments %}
+                                <a href="{% url 'payment_detail' payment_id=payment.payment_id %}" class="payment-link">
+                                    <div class="modern-payment-card">
+                                        <div class="payment-top">
+                                            <div>
+                                                <h4>{{ payment.booking.package.title }}</h4>
+                                                <span class="payment-id">#{{ payment.payment_id|truncatechars:8 }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="payment-status {{ payment.status }}">{{ payment.status|title }}</span>
+                                                {% if payment.status == 'pending' %}
+                                                <span class="action-hint">Click to pay</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="payment-details">
+                                            <div class="payment-info-grid">
+                                                <p><strong>Amount:</strong> ₹{{ payment.amount }}</p>
+                                                <p><strong>Date:</strong> {{ payment.created_at|date:"M d, Y" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            {% else %}
+                                <div class="empty-payments">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <p>You don't have any payment records yet.</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
 

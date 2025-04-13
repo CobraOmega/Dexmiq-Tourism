@@ -84,3 +84,46 @@ def payment_failed(request, payment_id):
     
     except Payment.DoesNotExist:
         return render(request, "error.html", {"message": "Payment not found"})
+
+# Display detailed information about a specific payment
+def payment_detail(request, payment_id):
+    
+    try:
+        payment = Payment.objects.get(payment_id=payment_id)
+        
+        # Security check - ensure users can only view their own payments
+        if payment.user != request.user and not request.user.is_staff:
+            return render(request, "error.html", {"message": "You are not authorized to view this payment"})
+        
+        # For pending payments, redirect to payment gateway
+        if payment.status == 'pending':
+            # Create a new checkout session for this payment
+            booking = payment.booking
+            
+            # Set a maximum price to avoid potential issues
+            safe_price = min(float(payment.amount), 999999.99)
+            
+            # Create a new Stripe checkout session
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'inr',
+                        'product_data': {'name': booking.package.title},
+                        'unit_amount': int(safe_price * 100),
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url=f'http://127.0.0.1:8000/payment/success/{payment.payment_id}/',
+                cancel_url=f'http://127.0.0.1:8000/payment/failed/{payment.payment_id}/'
+            )
+            
+            # Redirect to Stripe checkout
+            return redirect(session.url)
+        else:
+            # For completed or failed payments, show details
+            return render(request, "payment/detail.html", {"payment": payment})
+    
+    except Payment.DoesNotExist:
+        return render(request, "error.html", {"message": "Payment not found"})
